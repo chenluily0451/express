@@ -1,23 +1,34 @@
 <template>
   <div class="main">
-    <table>
-      <thead>
-      <tr>
-        <td>姓名</td>
-        <td>年龄</td>
-        <td>性别</td>
-        <td>地址</td>
-        <td>工作</td>
-      </tr>
-      </thead>
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-    </table>
+    <el-table
+      :data="tableData"
+      border
+      stripe
+      center
+      style="width: 80%">
+      <el-table-column
+        prop="name"
+        label="姓名"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="age"
+        label="年龄"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="sex"
+        label="性别">
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        label="地址">
+      </el-table-column>
+      <el-table-column
+        prop="job"
+        label="工作">
+      </el-table-column>
+    </el-table>
     <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true">添加数据</a>
 
 
@@ -54,6 +65,7 @@
   export default{
     data() {
       return {
+        tableData:[],
         dialogVisible: false,
         dataForm:{
           id:'',
@@ -75,6 +87,7 @@
         this.$http.post("/api/hero",dataObj).then(
           function(response){
             console.log(response)
+            this.tableData = response.body
           }
         )
       }
@@ -83,7 +96,7 @@
       this.$http.get("/api/hero").then(
         function(response){
           console.log(response)
-          this.dataForm = response
+          this.tableData = response.body
 
         }
       )
@@ -94,21 +107,6 @@
 </script>
 <style lang="scss">
   .main{
-    text-align: center;
-    table{
-      width:80%;
-      border-collapse: collapse;
-      margin:0 auto;
-      border:1px solid #ccc;
-      text-align: center;
-      thead{
-        background: #ebebeb;
-      }
-      td{
-        border:1px solid #ccc;
-      }
-
-    }
     .addDataBtn{
       width:80%;
       margin:0 auto;
