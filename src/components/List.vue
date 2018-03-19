@@ -3,14 +3,11 @@
     <table>
       <thead>
       <tr>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-        <td>4</td>
-        <td>5</td>
-        <td>6</td>
-        <td>7</td>
-        <td>8</td>
+        <td>姓名</td>
+        <td>年龄</td>
+        <td>性别</td>
+        <td>地址</td>
+        <td>工作</td>
       </tr>
       </thead>
       <tr>
@@ -19,32 +16,35 @@
         <td></td>
         <td></td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
       </tr>
     </table>
-    <a href="javaScript:void(0)" class="addDataBtn" @click="modalShow()">添加数据 {{dialogVisible}}</a>
+    <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true">添加数据</a>
 
 
     <el-dialog
       title="添加数据"
       :visible.sync="dialogVisible"
       width="30%">
-      <el-form>
-        <el-form-item label="名称">
-          <el-input></el-input>
+      <el-form ref="dataForm" label-width="70px" >
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="dataForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="活动区域">
-          <el-input ></el-input>
+        <el-form-item label="年龄" prop="age">
+          <el-input v-model="dataForm.age"></el-input>
         </el-form-item>
-        <el-form-item label="活动形式">
-          <el-input></el-input>
+        <el-form-item label="性别" prop="sex">
+          <el-input v-model="dataForm.sex"></el-input>
+        </el-form-item>
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="dataForm.address"></el-input>
+        </el-form-item>
+        <el-form-item label="工作" prop="job">
+          <el-input v-model="dataForm.job"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submitForm()">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -54,16 +54,39 @@
   export default{
     data() {
       return {
-        dialogVisible: false
+        dialogVisible: false,
+        dataForm:{
+          id:'',
+          name:'',
+          age:'',
+          sex:'',
+          address:'',
+          job:''
+        }
       }
     },
     components : {
       ElDialog
     },
     methods:{
-      modalShow(){
-          this.dialogVisible = true
+      submitForm(){
+        this.dialogVisible = false
+        const dataObj = this.dataForm
+        this.$http.post("/api/hero",dataObj).then(
+          function(response){
+            console.log(response)
+          }
+        )
       }
+    },
+    mounted(){
+      this.$http.get("/api/hero").then(
+        function(response){
+          console.log(response)
+          this.dataForm = response
+
+        }
+      )
     }
 
   }

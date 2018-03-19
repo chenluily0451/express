@@ -11,7 +11,7 @@ const Hero = require('../models/hero')
 // 查询所有路由信息
 router.get("/hero", (req, res) => {
   Hero.find({})
-      .sore({ update_at : -1 })
+      .sort({ update_at : -1 })
       .then(heros =>{
         res.json(heros)
       })

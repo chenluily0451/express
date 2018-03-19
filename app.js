@@ -6,20 +6,25 @@
 
 const express = require('express')
 
+const mongoose = require("mongoose");
+
 // 引入hero路由
 
 const hero = require('./router/hero')
+
+const bodyParser = require("body-parser")
+
+
+var db = mongoose.connect('mongodb://localhost:27017/myDbs');
+
 
 // 创建app对象
 
 const app = express()
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-// 定义路由
-
-app.use('/',(req,res) => {
-  res.send('Nice to meet U~')
-})
 
 // 定义端口号
 
