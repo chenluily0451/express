@@ -4,7 +4,7 @@
       :data="tableData"
       border
       stripe
-      center
+      :cell-style="{'text-align':'center'}"
       style="width: 80%">
       <el-table-column
         prop="name"
@@ -36,7 +36,7 @@
       title="添加数据"
       :visible.sync="dialogVisible"
       width="30%">
-      <el-form ref="dataForm" label-width="70px" >
+      <el-form :model="dataForm" :rules="rules" ref="dataForm" label-width="70px" >
         <el-form-item label="姓名" prop="name">
           <el-input v-model="dataForm.name"></el-input>
         </el-form-item>
@@ -44,7 +44,14 @@
           <el-input v-model="dataForm.age"></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="sex">
-          <el-input v-model="dataForm.sex"></el-input>
+          <el-select v-model="dataForm.sex" clearable placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="地址" prop="address">
           <el-input v-model="dataForm.address"></el-input>
@@ -52,11 +59,12 @@
         <el-form-item label="工作" prop="job">
           <el-input v-model="dataForm.job"></el-input>
         </el-form-item>
+        <el-form-item>
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="submitForm('dataForm')">提交</el-button>
+        </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitForm()">确 定</el-button>
-      </span>
+
     </el-dialog>
   </div>
 </template>
@@ -64,9 +72,32 @@
   import ElDialog from "../../node_modules/element-ui/packages/dialog/src/component"
   export default{
     data() {
+
+      var ageValidator = (rule, value, callback) => {
+        setTimeout(()=>{
+          if(!Number.isInteger(value*1)){
+            callback(new Error('请输入数字'))
+          }else if (value <18){
+            callback(new Error('年龄必须满18岁'))
+          }else{
+            callback()
+          }
+        })
+      };
+
       return {
         tableData:[],
-        dialogVisible: false,
+        options:[
+          {
+            value:'女',
+            label:'女'
+          },
+          {
+            value:'男',
+            label:'男'
+          }
+        ],
+        dialogVisible: true,
         dataForm:{
           id:'',
           name:'',
@@ -74,6 +105,25 @@
           sex:'',
           address:'',
           job:''
+        },
+        rules:{
+          name:[
+            {required:true, message:'请输入姓名', trigger:'blur'},
+            {min:3, max:8, message:'长度在3-8之间', trigger:'blur'}
+          ],
+          age:[
+            {required:true, message:'请输入年龄', trigger:'blur'},
+            { validator: ageValidator, trigger:'blur'}
+          ],
+          sex:[
+            {required:true, message:'请选择性别'},
+          ],
+          address:[
+            {required:true, message:'请输入地址'},
+          ],
+          job:[
+            {required:true, message:'请输入工作'},
+          ]
         }
       }
     },
@@ -81,15 +131,27 @@
       ElDialog
     },
     methods:{
-      submitForm(){
-        this.dialogVisible = false
-        const dataObj = this.dataForm
-        this.$http.post("/api/hero",dataObj).then(
-          function(response){
-            console.log(response)
-            this.tableData = response.body
-          }
-        )
+      submitForm(formName){
+        this.$refs[formName].validate((valid) =>{
+            if(valid) {
+                alert('submit!')
+            } else{
+              console.log('error.....')
+              return false
+            }
+        })
+
+
+
+
+//        this.dialogVisible = false
+//        const dataObj = this.dataForm
+//        this.$http.post("/api/hero",dataObj).then(
+//          function(response){
+//            console.log(response)
+//            this.tableData = response.body
+//          }
+//        )
       }
     },
     mounted(){
@@ -107,6 +169,9 @@
 </script>
 <style lang="scss">
   .main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     .addDataBtn{
       width:80%;
       margin:0 auto;
@@ -123,6 +188,12 @@
         opacity:.8;
       }
 
+    }
+    .cell{
+      text-align: center;
+    }
+    .el-select{
+      width:100%;
     }
   }
 
