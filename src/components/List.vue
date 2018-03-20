@@ -28,10 +28,17 @@
         prop="job"
         label="工作">
       </el-table-column>
+      <el-table-column
+        prop="control"
+        label="操作">
+        <template slot-scope="scope">
+          <el-button type="text">
+            <i class="el-icon-delete" size="big" @click="deleteConfirm(scope.row)"></i>
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true">添加数据</a>
-
-
     <el-dialog
       title="添加数据"
       :visible.sync="dialogVisible"
@@ -66,10 +73,19 @@
       </el-form>
 
     </el-dialog>
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogConfirmVisible"
+      width="30%">
+      <span>您确认删除该条数据吗</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogConfirmVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteData()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-  import ElDialog from "../../node_modules/element-ui/packages/dialog/src/component"
   export default{
     data() {
 
@@ -97,7 +113,9 @@
             label:'男'
           }
         ],
-        dialogVisible: true,
+        data_id:'',
+        dialogVisible: false,
+        dialogConfirmVisible: false,
         dataForm:{
           id:'',
           name:'',
@@ -127,43 +145,66 @@
         }
       }
     },
-    components : {
-      ElDialog
-    },
     methods:{
       submitForm(formName){
         this.$refs[formName].validate((valid) =>{
             if(valid) {
-                alert('submit!')
+              this.dialogVisible = false
+              const dataObj = this.dataForm
+              this.$http.post("/api/hero",dataObj).then(
+               (response) =>{
+                  console.log(response)
+                  this.tableData.push(response.body)
+                }
+              ).then(
+                this.$notify({
+                  title: '成功',
+                  message: '添加成功！',
+                  type: 'success'
+                })
+              )
             } else{
               console.log('error.....')
               return false
             }
         })
+      },
+      deleteConfirm(row){
+        this.dialogConfirmVisible = true
+        this.data_id = row._id
+      },
+      deleteData(){
+        this.$http.delete("/api/hero/"+this.data_id).then(
+          (response) =>{
+            if(response.ok){
+              this.$message({
+                type: "success",
+                message: "删除成功!"
+              });
+            }else{
+              this.$message({
+                type: "success",
+                message: "删除失败!"
+              });
+            }
+            this.getAllData()
+            this.dialogConfirmVisible = false
+          }
+        )
+      },
+      getAllData(){
+        this.$http.get("/api/hero").then(
+          (response) => {
+            console.log(response)
+            this.tableData = response.body
 
-
-
-
-//        this.dialogVisible = false
-//        const dataObj = this.dataForm
-//        this.$http.post("/api/hero",dataObj).then(
-//          function(response){
-//            console.log(response)
-//            this.tableData = response.body
-//          }
-//        )
+          }
+        )
       }
     },
     mounted(){
-      this.$http.get("/api/hero").then(
-        function(response){
-          console.log(response)
-          this.tableData = response.body
-
-        }
-      )
+      this.getAllData()
     }
-
   }
 
 </script>
