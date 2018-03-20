@@ -35,12 +35,15 @@
           <el-button type="text">
             <i class="el-icon-delete" size="big" @click="deleteConfirm(scope.row)"></i>
           </el-button>
+          <el-button type="text">
+            <i class="el-icon-edit-outline" size="big" @click="modifyConfirm(scope.row)"></i>
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true">添加数据</a>
+    <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true;dialogText='添加数据'">添加数据</a>
     <el-dialog
-      title="添加数据"
+      :title="dialogText"
       :visible.sync="dialogVisible"
       width="30%">
       <el-form :model="dataForm" :rules="rules" ref="dataForm" label-width="70px" >
@@ -103,6 +106,7 @@
 
       return {
         tableData:[],
+        dialogText:'',
         options:[
           {
             value:'女',
@@ -134,21 +138,23 @@
             { validator: ageValidator, trigger:'blur'}
           ],
           sex:[
-            {required:true, message:'请选择性别'},
+            {required:true, message:'请选择性别', trigger:'blur'},
           ],
           address:[
-            {required:true, message:'请输入地址'},
+            {required:true, message:'请输入地址', trigger:'blur'},
           ],
           job:[
-            {required:true, message:'请输入工作'},
+            {required:true, message:'请输入工作', trigger:'blur'},
           ]
         }
       }
     },
     methods:{
       submitForm(formName){
+
         this.$refs[formName].validate((valid) =>{
             if(valid) {
+              this.dialogText = '添加数据'
               this.dialogVisible = false
               const dataObj = this.dataForm
               this.$http.post("/api/hero",dataObj).then(
@@ -168,10 +174,38 @@
               return false
             }
         })
+
       },
       deleteConfirm(row){
         this.dialogConfirmVisible = true
         this.data_id = row._id
+      },
+      modifyConfirm(row){
+        this.dialogVisible = true
+        this.dialogText = '修改数据'
+        this.dataForm = Object.assign({}, row);
+        this.data_id = row._id
+
+//        var that = this;
+//        this.$http
+//          .put('/api/hero/'+this.data._id, this.dataForm, {
+//            emulateJSON: true
+//          })
+//          .then(
+//            function(response) {
+//              if (response.ok) {
+//                this.dialogVisible = false;
+//                this.$message({
+//                  message: "修改成功",
+//                  type: "success",
+//                  onClose: function() {
+//                    that.getAllData();
+//                  }
+//                });
+//              }
+//            }
+//          );
+
       },
       deleteData(){
         this.$http.delete("/api/hero/"+this.data_id).then(
