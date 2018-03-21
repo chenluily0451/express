@@ -51,7 +51,7 @@ router.put("/hero/:id",(req, res)=>{
     {_id: req.params.id},
     {
       $set:{
-        name: req.params.name,
+        name: req.body.name,
         age: req.body.age,
         sex:req.body.sex,
         address: req.body.address,
@@ -76,9 +76,7 @@ router.delete("/hero/:id",(req, res) => {
   Hero.findOneAndRemove({
     _id: req.params.id
   })
-    .then(hero =>{
-      res.send(`${hero.title}`)
-    })
+    .then(hero =>res.send(`${hero.title}`))
     .catch(err => {
       console.log('删除出错')
       res.json(err)

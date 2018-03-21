@@ -41,7 +41,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true;dialogText='添加数据'">添加数据</a>
+    <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true;dialogText='添加数据';addStatus=true">添加数据</a>
     <el-dialog
       :title="dialogText"
       :visible.sync="dialogVisible"
@@ -107,6 +107,8 @@
       return {
         tableData:[],
         dialogText:'',
+        addStatus:false,
+        modifyStatus:false,
         options:[
           {
             value:'女',
@@ -151,28 +153,50 @@
     },
     methods:{
       submitForm(formName){
-
         this.$refs[formName].validate((valid) =>{
             if(valid) {
-              this.dialogText = '添加数据'
+
               this.dialogVisible = false
               const dataObj = this.dataForm
-              this.$http.post("/api/hero",dataObj).then(
-               (response) =>{
-                  console.log(response)
-                  this.tableData.push(response.body)
-                }
-              ).then(
-                this.$notify({
-                  title: '成功',
-                  message: '添加成功！',
-                  type: 'success'
-                })
-              )
+//              判断添加还是修改状态
+              if(this.addStatus){
+                this.$http.post("/api/hero",dataObj).then(
+                  (response) =>{
+                    console.log(response)
+                    this.tableData.push(response.body)
+                  }
+                ).then(
+                  this.$notify({
+                    title: '成功',
+                    message: '添加成功！',
+                    type: 'success'
+                  })
+                )
+              }
+
+              if(this.modifyStatus){
+                this.$http.put("/api/hero/"+this.data_id, dataObj, {
+                    emulateJSON: true
+                  }).then(
+                    function(response) {
+                      if (response.ok) {
+                        this.dialogVisible = false
+                        this.getAllData()
+                        this.$notify({
+                          title: '成功',
+                          message: '修改成功！',
+                          type: 'success'
+                        })
+                      }
+                    }
+                  );
+              }
             } else{
               console.log('error.....')
               return false
             }
+          this.addStatus = false
+          this.modifyStatus = false
         })
 
       },
@@ -183,28 +207,11 @@
       modifyConfirm(row){
         this.dialogVisible = true
         this.dialogText = '修改数据'
+        this.modifyStatus = true
         this.dataForm = Object.assign({}, row);
         this.data_id = row._id
 
-//        var that = this;
-//        this.$http
-//          .put('/api/hero/'+this.data._id, this.dataForm, {
-//            emulateJSON: true
-//          })
-//          .then(
-//            function(response) {
-//              if (response.ok) {
-//                this.dialogVisible = false;
-//                this.$message({
-//                  message: "修改成功",
-//                  type: "success",
-//                  onClose: function() {
-//                    that.getAllData();
-//                  }
-//                });
-//              }
-//            }
-//          );
+
 
       },
       deleteData(){
