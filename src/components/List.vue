@@ -33,10 +33,13 @@
         label="操作">
         <template slot-scope="scope">
           <el-button type="text">
-            <i class="el-icon-delete" size="big" @click="deleteConfirm(scope.row)"></i>
+            <i class="el-icon-zoom-in" size="big" @click="jumpDetail(scope.row._id)"></i>
           </el-button>
           <el-button type="text">
             <i class="el-icon-edit-outline" size="big" @click="modifyConfirm(scope.row)"></i>
+          </el-button>
+          <el-button type="text">
+            <i class="el-icon-delete" size="big" @click="deleteConfirm(scope.row)"></i>
           </el-button>
         </template>
       </el-table-column>
@@ -242,6 +245,9 @@
 
           }
         )
+      },
+      jumpDetail(id){
+        this.$router.push('/detail/'+id)
       }
     },
     mounted(){

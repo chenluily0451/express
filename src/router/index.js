@@ -14,7 +14,7 @@ export default new Router({
       component: List
     },
     {
-      path : '/league/:name',
+      path : '/detail/:id',
       name : 'Detail',
       component : Detail
     },
