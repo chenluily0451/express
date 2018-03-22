@@ -41,7 +41,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true;dialogText='添加数据';addStatus=true">添加数据</a>
+    <a href="javaScript:void(0)" class="addDataBtn" @click="dialogVisible = true;dialogText='添加数据';addStatus=true;modifyStatus=false">添加数据</a>
     <el-dialog
       :title="dialogText"
       :visible.sync="dialogVisible"
@@ -208,6 +208,7 @@
         this.dialogVisible = true
         this.dialogText = '修改数据'
         this.modifyStatus = true
+        this.addStatus=false
         this.dataForm = Object.assign({}, row);
         this.data_id = row._id
 
