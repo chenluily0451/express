@@ -1,7 +1,7 @@
 <template>
   <div class="detail">
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/' }"> <返回</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/' }">  &lt;返回 </el-breadcrumb-item>
     </el-breadcrumb>
     <el-table
       :data="tableData"
