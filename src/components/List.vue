@@ -156,6 +156,7 @@
     },
     methods:{
       submitForm(formName){
+
         this.$refs[formName].validate((valid) =>{
             if(valid) {
 
@@ -200,6 +201,7 @@
             }
           this.addStatus = false
           this.modifyStatus = false
+          this.dataForm = {}
         })
 
       },
